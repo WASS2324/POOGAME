@@ -14,6 +14,6 @@ public class Tree extends Decor {
 
     @Override
     public boolean walkableBy(Gardener gardener) {
-        return gardener.canWalkOn(this);
+        return false; // Le jardinier peut marcher sur les arbres
     }
 }

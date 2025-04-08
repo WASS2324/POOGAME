@@ -14,6 +14,6 @@ public class Hedgehog extends Decor {
 
     @Override
     public boolean walkableBy(Gardener gardener) {
-        return gardener.canWalkOn(this);
+        return true;
     }
 }

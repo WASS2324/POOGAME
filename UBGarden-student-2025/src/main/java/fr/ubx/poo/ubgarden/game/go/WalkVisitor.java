@@ -12,7 +12,7 @@ public interface WalkVisitor {
      * @return true if the visitor can walk on the decor, false by default
      */
     default boolean canWalkOn(Decor decor) {
-        return true;
+        return false;
     }
 
     /**

@@ -20,6 +20,10 @@ public class Grass extends Ground {
             bonus.pickUpBy(gardener);
         }
     }
+    @Override
+    public boolean walkableBy(Gardener gardener) {
+        return true;
+    }
 
     @Override
     public int energyConsumptionWalk() {

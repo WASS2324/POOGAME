@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2020. Laurent Réveillère
- */
-
 package fr.ubx.poo.ubgarden.game.go.personage;
 
 import fr.ubx.poo.ubgarden.game.Direction;
@@ -21,7 +17,6 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     private boolean moveRequested = false;
 
     public Gardener(Game game, Position position) {
-
         super(game, position);
         this.direction = Direction.DOWN;
         this.energy = game.configuration().gardenerEnergy();
@@ -29,16 +24,12 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
 
     @Override
     public void pickUp(EnergyBoost energyBoost) {
-// TODO
         System.out.println("I am taking the boost, I should do something ...");
-
     }
-
 
     public int getEnergy() {
         return this.energy;
     }
-
 
     public void requestMove(Direction direction) {
         if (direction != this.direction) {
@@ -49,30 +40,40 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     }
 
     @Override
-    public final boolean canMove(Direction direction) {
+    public boolean canMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
-        System.out.println("CanMove? Tentative vers : " + nextPos);
+        // 1. Vérifie les limites de la grille
         if (!game.world().getGrid().inside(nextPos)) {
-            System.out.println("Déplacement refusé : hors limites.");
+            System.out.println("Hors limites !");
             return false;
         }
-        return true;
+        // 2. Regarde le décor à la prochaine position
+        Decor next = game.world().getGrid().get(nextPos);
+        if (next == null) {
+            return true;  // Pas de décor = on peut marcher
+        }
+        // 3. Demande au décor si c’est OK
+        boolean canWalk = next.walkableBy(this);
+        System.out.println("Décor : " + next.getClass().getSimpleName() + ", OK ? " + canWalk);
+        return canWalk;
     }
+
     @Override
     public Position move(Direction direction) {
+        if (!canMove(direction)) {
+            System.out.println("Déplacement bloqué");
+            return getPosition();  // Ne bouge pas
+        }
         Position nextPos = direction.nextPosition(getPosition());
-        Decor next = game.world().getGrid().get(nextPos);
-        setPosition(nextPos);
-        if (next != null)
-            next.pickUpBy(this);
+        setPosition(nextPos);  // Déplace le jardinier
+        System.out.println("Nouveau lieu : " + nextPos);
         return nextPos;
     }
 
     public void update(long now) {
         if (moveRequested) {
-            if (canMove(direction)) {
-                move(direction);
-            }
+            System.out.println("Update : décalage demandé en direction : " + direction);
+            move(direction);
         }
         moveRequested = false;
     }
@@ -87,6 +88,4 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     public Direction getDirection() {
         return direction;
     }
-
-
 }
