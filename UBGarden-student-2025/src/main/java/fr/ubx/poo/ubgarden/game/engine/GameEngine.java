@@ -6,6 +6,9 @@
 
     import fr.ubx.poo.ubgarden.game.Direction;
     import fr.ubx.poo.ubgarden.game.Game;
+    import fr.ubx.poo.ubgarden.game.Position;
+    import fr.ubx.poo.ubgarden.game.go.decor.Decor;
+    import fr.ubx.poo.ubgarden.game.go.decor.Hedgehog;
     import fr.ubx.poo.ubgarden.game.go.personage.Gardener;
     import fr.ubx.poo.ubgarden.game.go.personage.Hornet;
     import fr.ubx.poo.ubgarden.game.go.personage.Wasp;
@@ -174,9 +177,19 @@
 
             gardener.update(now);
 
+            // Vérifier si le jardinier est sur un hérisson
+            Position gardenerPos = gardener.getPosition();
+            Decor decor = game.world().getGrid().get(gardenerPos);
+            if (decor instanceof Hedgehog) {
+                gameLoop.stop();
+                showMessage("Victory!", Color.GREEN);
+                return; // Arrête ici pour éviter d'autres vérifications
+            }
+
+            // Vérification existante de l'énergie
             if (gardener.getEnergy() < 0) {
                 gameLoop.stop();
-                showMessage("Perdu!", Color.RED);
+                showMessage("Loss!", Color.RED);
             }
         }
 

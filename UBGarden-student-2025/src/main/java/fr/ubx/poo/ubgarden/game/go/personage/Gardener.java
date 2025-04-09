@@ -12,7 +12,7 @@ import fr.ubx.poo.ubgarden.game.go.decor.Decor;
 
 public class Gardener extends GameObject implements Movable, PickupVisitor, WalkVisitor {
 
-    private final int energy;
+    private  int energy;
     private Direction direction;
     private boolean moveRequested = false;
 
@@ -40,22 +40,17 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     }
 
     @Override
-    public boolean canMove(Direction direction) {
+    public final boolean canMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
-        // 1. Vérifie les limites de la grille
         if (!game.world().getGrid().inside(nextPos)) {
-            System.out.println("Hors limites !");
+            System.out.println("Déplacement refusé : hors limites.");
             return false;
         }
-        // 2. Regarde le décor à la prochaine position
-        Decor next = game.world().getGrid().get(nextPos);
-        if (next == null) {
-            return true;  // Pas de décor = on peut marcher
+        Decor decor = game.world().getGrid().get(nextPos);
+        if (decor != null && !decor.walkableBy(this)) {
+            return false; // Ne peut pas bouger si le décor n'est pas "marchable"
         }
-        // 3. Demande au décor si c’est OK
-        boolean canWalk = next.walkableBy(this);
-        System.out.println("Décor : " + next.getClass().getSimpleName() + ", OK ? " + canWalk);
-        return canWalk;
+        return true;
     }
 
     @Override
@@ -79,6 +74,9 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     }
 
     public void hurt(int damage) {
+        // Supposons que energy soit modifiable (actuellement final)
+        // Vous devrez retirer le "final" de la déclaration de energy
+        this.energy -= damage;
     }
 
     public void hurt() {
